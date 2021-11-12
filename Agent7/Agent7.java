@@ -5,11 +5,11 @@ import java.awt.Point;
 /**
  * 
  * @author Zachary Tarman
- * Handles Agent 6 responsibilities in accordance with the descriptions
+ * Handles Agent 7 responsibilities in accordance with the descriptions
  * associated with Project 3 of CS520 Fall 2021.
  *
  */
-public class Agent6 {
+public class Agent7 {
 	
 	/**
 	 * The actual maze object
@@ -53,8 +53,8 @@ public class Agent6 {
     /**
      * Prints the stats that might be useful in data collection for Project 3.
      * Cost is total effort exercised by the agent.
-     * @see			Agent6#trajectoryLength
-     * @see			Agent6#examinations
+     * @see			Agent7#trajectoryLength
+     * @see			Agent7#examinations
      */
     public void printStats() {
     	System.out.println("Statistics for Maze Solution");
@@ -274,7 +274,7 @@ public class Agent6 {
 	 * @param pos			The cell to be examined
 	 * @return				Whether the target has been found
 	 * @see					Maze#isTarget(Point)
-	 * @see					Agent6#updateRemainingBeliefState(CellInfo, CellInfo, double, double, boolean)
+	 * @see					Agent7#updateRemainingBeliefState(CellInfo, CellInfo, double, double, boolean)
 	 */
 	public boolean examine(CellInfo pos) {
 		
@@ -285,7 +285,7 @@ public class Agent6 {
 		int terrainType = pos.getTerrain().value; // THIS WILL SIGNAL TO US WHAT TERRAIN THIS CELL IS
 			// TERRAIN DETERMINES HOW LIKELY WE WILL BE TO SENSE THE TARGET
 		
-		double oldProb = pos.getProb(); // CONTAINS THE OLD PROBABILITY OF THE CELL WE'RE EXAMINING
+		double oldProb = pos.getProbContain(); // CONTAINS THE OLD PROBABILITY OF THE CELL WE'RE EXAMINING
 		double newProb; // WILL CONTAIN THE NEW PROBABILITY OF THE TARGET BEING CONTAINED IN THIS CELL (IF NEEDED)
 		double rand = Math.random(); // A RANDOMLY GENERATED VALUE THAT WILL DETERMINE IF WE FOUND THE TARGET OR NOT
 		// System.out.println("This cell's current probability of containing the target is " + oldProb);		
@@ -333,7 +333,7 @@ public class Agent6 {
 		
 		// UPDATE THE BELIEF SYSTEM
 		pos.updateProb(newProb);
-		highestProb = newProb;
+		highestProb = pos.getProbFind();
 		// System.out.println("The updated probability of this cell is " + newProb);
 		// System.out.println("The currX and currY variables equal " + currX + " & " + currY);
 		updateRemainingBeliefState(pos, null, oldProb, 0, true); // SEE BELOW HELPER METHOD
@@ -395,11 +395,11 @@ public class Agent6 {
 				 * POSTERIOR ACCORDINGLY
 				 * 				SEE REPORT WRITE-UP FOR DETAILS ON DERIVATION
 				 */
-				temp.updateProb(temp.getProb() / (1 - (multiplier *(oldProb))));
+				temp.updateProb(temp.getProbContain() / (1 - (multiplier *(oldProb))));
 				// System.out.println("Cell " + temp.getPos().getX() + "," + temp.getPos().getY() + " has new prob of " + temp.getProb());
 				
-				if (temp.getProb() >= highestProb) {					
-					// POTENTIALLY UPDATING THE CLOSEST CELL WITH THE HIGHEST PROBABILITY
+				if (temp.getProbFind() >= highestProb) {					
+					// POTENTIALLY UPDATING THE CLOSEST CELL WITH THE HIGHEST PROBABILITY OF FINDING THE TARGET
 						// ESSENTIALLY, THE FOLLOWING IS HANDLING TIE-BREAKERS 
 						// BASED ON MANHATTAN DISTANCE FROM CURRENT POSITION
 					
@@ -411,18 +411,18 @@ public class Agent6 {
 					double tempTwo = Math.abs(pos.getPos().getY() - tempy);
 					double tempManhattan = tempOne + tempTwo;
 					
-					if (temp.getProb() > highestProb || (temp.getProb() == highestProb && tempManhattan < currManhattan)) { // NEW OPTIMAL CELL TO SHOOT FOR
+					if (temp.getProbFind() > highestProb || (temp.getProbFind() == highestProb && tempManhattan < currManhattan)) { // NEW OPTIMAL CELL TO SHOOT FOR
 						// System.out.println("The current lowest manhattan distance is " + currManhattan);
 						cellOfHighestProb = temp;
 						currManhattan = tempManhattan;
-						/* System.out.println("The new cell of highest probability is " + 
+						/* System.out.println("The new cell of highest probability of finding the target is " + 
 								cellOfHighestProb.getPos().getX() + "," +
 								cellOfHighestProb.getPos().getY() + 
 								" with probability of " + temp.getProb());
 						System.out.println("The new lowest manhattan distance is " + currManhattan); */
 					}
 					
-					highestProb = temp.getProb();
+					highestProb = temp.getProbFind();
 				}
 			}
 		}
@@ -581,14 +581,14 @@ public class Agent6 {
 	 * @param rowNum			The number of rows in the yet-to-be-built maze (provided by user)
 	 * @param colNum			The number of columns in the yet-to-be-built maze (provided by user)
 	 * @return					'S' for a successful trial, 'F' for a failed trial
-	 * @see						Agent6#examine(CellInfo)
-	 * @see						Agent6#plan(CellInfo, CellInfo)
+	 * @see						Agent7#examine(CellInfo)
+	 * @see						Agent7#plan(CellInfo, CellInfo)
 	 * @see						Maze.java
 	 * @see						CellInfo.java
 	 */
 	public static char run(int rowNum, int colNum) {
 
-		Agent6 mazeRunner = new Agent6(); // INSTANCE KEEPS TRACK OF ALL OF OUR DATA AND STRUCTURES
+		Agent7 mazeRunner = new Agent7(); // INSTANCE KEEPS TRACK OF ALL OF OUR DATA AND STRUCTURES
 		
 		// READING FROM INPUT
 		mazeRunner.rows = rowNum; // THE NUMBER OF ROWS THAT WE WANT IN THE CONSTRUCTED MAZE
@@ -610,7 +610,7 @@ public class Agent6 {
 		// WE KNOW THAT INITIALLY THE HIGHEST PROBABILITY IS SHARED BY ALL CELLS
 		// WE ALSO KNOW THAT THE CLOSEST CELL TO US IS THE CELL WE'RE STARTING IN
 		// TO KEEP THE IMPLEMENTATION CONSISTENT, WE'LL JUST PLAN A PATH TO WHERE WE'RE ALREADY AT
-		mazeRunner.highestProb = start.getProb();
+		mazeRunner.highestProb = start.getProbFind();
 		mazeRunner.cellOfHighestProb = start;
 		LinkedList<CellInfo> plannedPath = mazeRunner.plan(start, mazeRunner.cellOfHighestProb); // STORES OUR BEST PATH THROUGH THE MAZE
 		// System.out.println("We've gotten through the first plan.");
@@ -645,7 +645,7 @@ public class Agent6 {
 					plannedPath = mazeRunner.plan(currCell, mazeRunner.cellOfHighestProb);
 					
 					if (plannedPath == null) { // WE WEREN'T ABLE TO REACH THE CELL WITH THE HIGHEST PROBABILITY
-						double unreachableOldProb = mazeRunner.cellOfHighestProb.getProb();
+						double unreachableOldProb = mazeRunner.cellOfHighestProb.getProbContain();
 						mazeRunner.cellOfHighestProb.updateProb(0);
 						mazeRunner.highestProb = 0;
 						
@@ -679,7 +679,7 @@ public class Agent6 {
 				currManhattan = currOne + currTwo;
 				
 				// UPDATE KNOWLEDGE BASE NOW THAT WE'VE FOUND A BLOCKED CELL
-				double obsOldProb = obstruction.getProb();
+				double obsOldProb = obstruction.getProbContain();
 				obstruction.updateProb(0);
 				
 				if (obstruction.getPos().getX() == mazeRunner.cellOfHighestProb.getPos().getX() &&
@@ -700,7 +700,7 @@ public class Agent6 {
 					plannedPath = mazeRunner.plan(currCell, mazeRunner.cellOfHighestProb);
 					
 					if (plannedPath == null) {
-						double unreachableOldProb = mazeRunner.cellOfHighestProb.getProb();
+						double unreachableOldProb = mazeRunner.cellOfHighestProb.getProbContain();
 						mazeRunner.cellOfHighestProb.updateProb(0);
 						mazeRunner.highestProb = 0;
 						

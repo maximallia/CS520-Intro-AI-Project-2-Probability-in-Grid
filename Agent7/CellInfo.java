@@ -52,7 +52,10 @@ public class CellInfo {
 	 * The probability of finding the target in this cell
 	 */
 	private double probFind;
-
+	/**
+	 * The multiplier used when calculating probFind based on a cell's terrain and its visited status
+	 */
+	private double multiplier;
 	
 	
 	/**
@@ -79,8 +82,10 @@ public class CellInfo {
 		this.parent = null; // WILL BE SET ONCE WE ESTABLISH A PLANNED PATH TO SOME DESTINATION
 		this.g_value = 0; // DEFAULT VALUE, WILL BE CHANGED WHEN CELLS ARE SEARCHED
 		this.h_estimate = 0; // WILL BE SET WITH EACH NEW DESTINATION
+		this.multiplier = 0.5; // THE DEFAULT MULTIPLIER FOR AN UNVISITED CELL
 		
 		this.probContain = prob; // SETS THE INITIAL PROBABILITY THAT THIS CELL IS THE TARGET
+		this.probFind = this.probContain * multiplier; // THE BASIC WAY WE'LL COMPUTE THE PROBABILITY OF FINDING THE TARGET IN A CELL
 	}
 
 
@@ -158,10 +163,23 @@ public class CellInfo {
 	// SET METHODS
 	/**
 	 * Sets the cell to have been visited 
+	 * and updates the multiplier controlling the probability of finding the target in this cell
 	 * (done during execution and also applies to blocked cells that the agent runs into)
 	 */
 	public void setVisited() { // SET THE CELL TO HAVE BEEN VISITED (DONE DURING EXECUTION PHASE)
+		
 		this.visited = true;
+		
+		if (this.terr.value == 0) { // THIS CELL IS FLAT
+			this.multiplier = 0.8;
+		} else if (this.terr.value == 1) { // THIS CELL IS HILLY
+			this.multiplier = 0.5;
+		} else if (this.terr.value == 2) { // THIS CELL IS FOREST-Y
+			this.multiplier = 0.2;
+		} else { // THIS CELL IS BLOCKED OR UNREACHABLE
+			this.multiplier = 0;
+		}
+		
 		return;
 	}
 	/**
@@ -196,21 +214,7 @@ public class CellInfo {
 	public void updateProb(double p) {
 		
 		this.probContain = p;
-		double multiplier = 0.5; // DEFAULT VALUE FOR UNVISITED CELL
-		
-		if (this.visited) { // THIS CELL HAS BEEN VISITED
-			if (this.terr.value == 0) { // THIS CELL HAS BEEN OBSERVED TO BE FLAT
-				multiplier = 0.8;
-			} else if (this.terr.value == 1) { // THIS CELL HAS BEEN OBSERVED TO BE HILLY
-				multiplier = 0.5;
-			} else if (this.terr.value == 2) { // THIS CELL HAS BEEN OBSERVED TO BE FOREST-Y
-				multiplier = 0.2;
-			} else { // THIS CELL HAS BEEN OBSERVED TO BE BLOCKED (KIND OF ARBITRARY SINCE THE CONTAIN PROBABILITY WILL BE 0 ANYWAY)
-				this.probFind = 0;
-			}
-		}
-		
-		this.probFind = (this.probContain * multiplier);
+		this.probFind = (this.probContain * this.multiplier);
 		
 		return;
 	}

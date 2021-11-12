@@ -620,7 +620,17 @@ public class Agent7 {
 
 			// EXTRACT THE NEXT CELL IN THE PLANNED PATH
 			CellInfo currCell = plannedPath.poll();
-			currCell.setVisited();
+			
+			// IF THE CELL HASN'T BEEN VISITED YET, IT COULD POTENTIALLY AFFECT THE BELIEF STATE
+			if (!currCell.isVisited()) {
+				currCell.setVisited();
+				currCell.updateProb(currCell.getProbContain());
+				if (currCell.getProbFind() > mazeRunner.highestProb) {
+					mazeRunner.highestProb = currCell.getProbFind();
+					mazeRunner.cellOfHighestProb = currCell;
+					// THE CELL THAT WE'RE CURRENTLY IN IS NOW OUR DESTINATION (PROBABLY AS A RESULT OF IT HAVING FLAT TERRAIN)
+				}
+			}
 			
 			double currOne;
 			double currTwo;

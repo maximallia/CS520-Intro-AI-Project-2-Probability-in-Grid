@@ -407,23 +407,14 @@ public class Agent8 {
 				
 				if (temp.getC() >= highestC) {					
 					
-					// POTENTIALLY UPDATING THE MOST COST-EFFECTIVE CELL TO TRAVEL TO
-					LinkedList<CellInfo> tempPlanPath = plan(pos, temp);
-					if (tempPlanPath == null) {
-						continue;
-					}
-					temp.updateC(temp.getProbFind() / (tempPlanPath.size() + 1));
-					
-					if (temp.getC() >= highestC) { // NEW OPTIMAL CELL TO SHOOT FOR
-						// System.out.println("The current lowest manhattan distance is " + currManhattan);
-						cellOfHighestC = temp;
-						highestC = temp.getC();
-						/* System.out.println("The new cell of highest probability of finding the target is " + 
-								cellOfHighestProb.getPos().getX() + "," +
-								cellOfHighestProb.getPos().getY() + 
-								" with probability of " + temp.getProb());
-						System.out.println("The new lowest manhattan distance is " + currManhattan); */
-					}
+					// UPDATING THE MOST COST-EFFECTIVE CELL TO TRAVEL TO
+					cellOfHighestC = temp;
+					highestC = temp.getC();
+					/* System.out.println("The new cell of highest probability of finding the target is " + 
+							cellOfHighestProb.getPos().getX() + "," +
+							cellOfHighestProb.getPos().getY() + 
+							" with probability of " + temp.getProb());
+					System.out.println("The new lowest manhattan distance is " + currManhattan); */
 				}
 			}
 		}

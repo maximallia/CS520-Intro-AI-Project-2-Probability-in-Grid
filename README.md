@@ -42,3 +42,6 @@ You will need to repeatedly run each agent on a variety of randomly generated bo
 
 The third agent, Agent 8 needs to be an agent of your own design. It has the exact same information as Agents 6 and 7, and can move and sense in the exact same way. You may only modify how it decides where to go / what to do next. Agent 8 needs to have a better performance than Agents 6 and 7, in terms of reducing the number of needed actions.
 
+MORE INFO: Assignment 3-1.pdf
+
+FINAL REPORT: Daniel Ying dty16 Zachary Tarman zpt2 project 1.pdf

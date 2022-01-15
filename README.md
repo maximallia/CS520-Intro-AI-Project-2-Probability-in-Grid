@@ -1,4 +1,4 @@
-CS520-Intro-AI-Project-3-Probability-in-GridCS520-Probability-in-Grid
+# CS520-Intro-AI-Project-3-Probability-in-GridCS520-Probability-in-Grid
 
 
 We return to Gridworld, but not the Gridworld that you are used to.
